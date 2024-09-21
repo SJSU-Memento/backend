@@ -1,0 +1,4 @@
+:80
+
+reverse_proxy /api* {$BACKEND_HOST:localhost:8000}
+reverse_proxy {$FRONTEND_HOST:localhost:3030}

@@ -1,0 +1,24 @@
+services:
+  postgres:
+    image: postgres
+    restart: always
+    ports:
+      - 127.0.0.1:5432:5432
+    volumes:
+      - ./database/data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=memento
+      - POSTGRES_DB=memento
+      - POSTGRES_PASSWORD=5599ccb5743c9646981d19f0d9632831
+  # TODO: enable this once we have the frontend up and running
+  # caddy:
+  #   image: caddy:2.7.6-alpine
+  #   ports:
+  #     - 0.0.0.0:80:80
+  #   volumes:
+  #     - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+  #     - ./caddy/data:/data
+  #     - ./caddy/config:/config
+  #   environment:
+  #     - FRONTEND_HOST=host.docker.internal:3030
+  #     - BACKEND_HOST=host.docker.internal:8000

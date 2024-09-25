@@ -16,7 +16,7 @@ poetry install
 ## Run
 
 ```bash
-poetry run uvicorn app:fastapi --reload
+poetry run uvicorn app:app --reload
 ```
 
 ## Database

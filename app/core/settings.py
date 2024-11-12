@@ -3,8 +3,9 @@ from pydantic_settings import BaseSettings
 from pydantic import computed_field
 
 class Settings(BaseSettings):
-    database_url: str
     env: Literal['production'] | Literal['development'] = "production"
+    database_url: str
+    openai_api_key: str
 
     @computed_field
     @property

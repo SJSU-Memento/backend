@@ -4,5 +4,8 @@ from pydantic import BaseModel
 
 class MemoryQuery(BaseModel):
     query: str
-    start_datetime: Optional[datetime] = None
-    end_datetime: Optional[datetime] = None
+    long: Optional[float] = None
+    lat: Optional[float] = None
+    radius: Optional[float] = None
+    start: Optional[datetime] = None
+    end: Optional[datetime] = None

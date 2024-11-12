@@ -10,6 +10,14 @@ services:
       - POSTGRES_USER=memento
       - POSTGRES_DB=memento
       - POSTGRES_PASSWORD=5599ccb5743c9646981d19f0d9632831
+  elasticsearch:
+    image: elasticsearch:8.8.0
+    ports:
+      - 127.0.0.1:9200:9200
+      - 127.0.0.1:9300:9300
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
   # TODO: enable this once we have the frontend up and running
   # caddy:
   #   image: caddy:2.7.6-alpine

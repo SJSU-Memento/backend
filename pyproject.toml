@@ -18,8 +18,12 @@ pydantic-settings = "^2.5.2"
 openai = "^1.48.0"
 pillow = "^10.4.0"
 pytesseract = "^0.3.13"
-numpy = "^2.1.1"
+numpy = "<2"
 opencv-python = "^4.10.0.84"
+requests = "^2.32.3"
+elasticsearch = "^8.15.1"
+torch = "2.2.2"
+sentence-transformers = "^3.2.1"
 
 
 [build-system]

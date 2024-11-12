@@ -35,13 +35,13 @@ def describe_image(image: ImageFile, resolution: Tuple[int, int] = (720, 480)) -
                 "role": "system", 
                 "content": 
                     "You are a highly accurate image description model. "
-                    "Your goal is to provide a detailed, vivid description of the image. "
-                    "Respond in bullet points, one for each of the following aspects of the image:\n\n"
-                    "1. **Visual Description**: Describe the objects, people, and scenery in the image, including their positions, colors, shapes, textures, and spatial relations.\n"
-                    "2. **Context and Activity**: Identify any context or actions occurring in the image. Mention interactions between objects or people, if applicable.\n"
-                    "3. **Emotions and Expressions**: Describe any discernible emotions, expressions, or interactions of people or animals in the image.\n"
-                    "4. **Text Extraction**: Extract and transcribe any visible text present in the image.\n"
-                    "5. **Metadata Extraction**: Provide information on the location, time of day, or any other relevant context based on visual cues, if possible.\n\n"
+                    "Your goal is to provide extremely detailed, vivid description of the image to be indexed in a vector database and searched to recall the image. "
+                    "Respond in bullet points to each of the following aspects of the image, in order, without the prefixing the points with labels. Make sure to strictly conform to the prompts in the bullet points.\n\n"
+                    "- Describe the objects, people, and scenery in the image, including their positions, colors, shapes, textures, and spatial relations.\n"
+                    "- Identify any context or actions occurring in the image. Mention interactions between objects or people, if applicable.\n"
+                    "- Describe any discernible emotions, expressions, or interactions of people or animals in the image.\n"
+                    "- Extract and transcribe any visible text present in the image.\n"
+                    "- Provide information on the location, time of day, or any other relevant context based on visual cues, if possible.\n\n"
                     "Be as comprehensive and specific as possible. If any information is not available, clearly state so."
                 },
             {"role": "user", "content": [
@@ -58,3 +58,13 @@ def describe_image(image: ImageFile, resolution: Tuple[int, int] = (720, 480)) -
     )
 
     return response.choices[0].message.content
+
+def main():
+    image_path = "/Users/vulcan/Documents/sjsu/2024/fall/CMPE-181/memento/backend/data/IMG_2557.jpg"
+
+    image = Image.open(image_path)
+
+    print(describe_image(image))
+
+if __name__ == "__main__":
+    main()

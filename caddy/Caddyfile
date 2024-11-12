@@ -1,4 +1,5 @@
-:80
+:9999
 
 reverse_proxy /api* {$BACKEND_HOST:localhost:8000}
-reverse_proxy {$FRONTEND_HOST:localhost:3030}
+reverse_proxy /storage* {$STORAGE_HOST:localhost:9898}
+reverse_proxy {$FRONTEND_HOST:localhost:5173}

@@ -1,3 +1,4 @@
+data/storage
 database/data
 caddy/data
 caddy/config

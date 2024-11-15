@@ -321,15 +321,15 @@ class ImageSearchSystem:
 
     def get_image_sequence(self, timestamp: datetime, direction: Literal["before", "after"], limit: int = 10, inclusive: bool = False) -> List[Dict[str, Any]]:
         try:
-            sort_order = "asc"
-            
             if direction == "before":
+                sort_order = "desc"
                 key = "lte" if inclusive else "lt"
                 range_query = {
                     key: timestamp,
                     "format": "strict_date_optional_time"
                 }
             else:
+                sort_order = "asc"
                 key = "gte" if inclusive else "gt"
                 range_query = {
                     key: timestamp,
@@ -360,7 +360,7 @@ class ImageSearchSystem:
 
             response_hits = response.get("hits", {}).get("hits", [])
             
-            return [{
+            results = [{
                 "id": hit["_source"]["id"],
                 "timestamp": hit["_source"]["timestamp"],
                 "image_path": f'/storage/{hit["_source"]["image_path"].split("/")[-1]}',
@@ -374,6 +374,12 @@ class ImageSearchSystem:
                 "country": hit["_source"].get("country"),
                 "timestamp": hit["_source"]["timestamp"]
             } for hit in response_hits]
+            
+            # ensure order is always oldest to newest
+            if direction == "before":
+                results.reverse()
+
+            return results
         except Exception:
             traceback.print_exc("Error retrieving image sequence")
             return []

@@ -3,8 +3,8 @@ from typing import NamedTuple
 
 from PIL import Image
 
-from app.modules.image_metadata_extraction.description import describe_image
-from app.modules.image_metadata_extraction.ocr import extract_text_from_image
+from app.modules.metadata_extraction.description import describe_image
+from app.modules.metadata_extraction.ocr import extract_text_from_image
 
 class ImageMetadata(NamedTuple):
     description: str

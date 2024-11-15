@@ -9,6 +9,25 @@ from app.core.settings import settings
 
 client = OpenAI(api_key=settings.openai_api_key)
 
+def get_audio_transcription(audio: bytes) -> str:
+    """
+    Transcribes audio data to text.
+
+    Args:
+        audio (bytes): _description_
+
+    Returns:
+        str: _description_
+    """
+
+    transcription = client.audio.transcriptions.create(
+        model="whisper-1",
+        file=audio
+    )
+    
+    return transcription.text
+
+
 def describe_image(image: ImageFile, resolution: Tuple[int, int] = (720, 480)) -> str:
     """
 

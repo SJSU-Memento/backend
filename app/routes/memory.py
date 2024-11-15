@@ -1,8 +1,7 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy import select
+from datetime import datetime
+from typing import Literal
+from fastapi import APIRouter, Depends, HTTPException, Query
 
-from app.core.db import get_async_session
-from app.model.Memory import Memory
 from app.schema import MemoryQuery
 from app.modules.elasticsearch import elastic
 
@@ -38,4 +37,50 @@ async def read_memories(query: MemoryQuery = Depends()):
         "memories": hybrid_results
     }
 
+       
+# Custom dependency to preprocess the timestamp
+def parse_timestamp(timestamp: str = Query(...)) -> datetime:
+    # for some reason the timestamp is stored in a different format
+    # inside eslasticsearch, so we need to normalize it
+
+    try:
+        # Replace space with '+', assuming the space indicates a timezone issue
+        normalized_timestamp = timestamp.replace(' ', '+')
+        return datetime.fromisoformat(normalized_timestamp)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=f"Invalid timestamp format: {e}")
+
+
+@router.get("/timeline")
+async def read_temporal_memory(
+    direction: Literal["before", "after", "both"],
+    timestamp: datetime = Depends(parse_timestamp),
+    limit: int = 10
+    ):
+    """Get a memory by ID."""
+
+    if direction == "both":
+        elastic_results = []
+        elastic_results.extend(elastic.get_image_sequence(
+            timestamp=timestamp,
+            direction="before",
+            limit=limit,
+            # inclusive=True
+        ))
+        elastic_results.extend(elastic.get_image_sequence(
+            timestamp=timestamp,
+            direction="after",
+            limit=limit,
+            inclusive=True
+        ))
+    else:
+        elastic_results = elastic.get_image_sequence(
+            timestamp=timestamp,
+            direction=direction,
+            limit=limit,
+        )
+
+    return {
+        "memories": elastic_results
+    }
 

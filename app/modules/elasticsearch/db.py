@@ -1,3 +1,4 @@
+import traceback
 from elasticsearch import Elasticsearch
 from typing import Dict, List, Literal, Optional, Any, Union
 from datetime import datetime
@@ -299,8 +300,9 @@ class ImageSearchSystem:
             
             return [{
                 "score": hit["_score"],
+                "timestamp": hit["_source"]["timestamp"],
                 "id": hit["_source"]["id"],
-                "image_path": hit["_source"]["image_path"].split("/")[-1],
+                "image_path": f'/storage/{hit["_source"]["image_path"].split("/")[-1]}',
                 "ocr_text": hit["_source"].get("ocr_text"),
                 "description": hit["_source"]["llm_description"],
                 "coords": hit["_source"].get("location"),
@@ -317,6 +319,65 @@ class ImageSearchSystem:
             print(f"Error executing search: {e}")
             raise
 
+    def get_image_sequence(self, timestamp: datetime, direction: Literal["before", "after"], limit: int = 10, inclusive: bool = False) -> List[Dict[str, Any]]:
+        try:
+            sort_order = "asc"
+            
+            if direction == "before":
+                key = "lte" if inclusive else "lt"
+                range_query = {
+                    key: timestamp,
+                    "format": "strict_date_optional_time"
+                }
+            else:
+                key = "gte" if inclusive else "gt"
+                range_query = {
+                    key: timestamp,
+                    "format": "strict_date_optional_time"
+                }
+
+
+            search_body = {
+                "query": {
+                    "range": {
+                        "timestamp": range_query
+                    }
+                },
+                "sort": {
+                    "timestamp": {
+                        "order": sort_order
+                    }
+                },
+                "size": limit
+            }
+
+            print(search_body)
+
+            response = self.es.search(
+                index=self.index_name,
+                body=search_body
+            )
+
+            response_hits = response.get("hits", {}).get("hits", [])
+            
+            return [{
+                "id": hit["_source"]["id"],
+                "timestamp": hit["_source"]["timestamp"],
+                "image_path": f'/storage/{hit["_source"]["image_path"].split("/")[-1]}',
+                "ocr_text": hit["_source"].get("ocr_text"),
+                "description": hit["_source"]["llm_description"],
+                "coords": hit["_source"].get("location"),
+                "address": hit["_source"].get("address"),
+                "city": hit["_source"].get("city"),
+                "state": hit["_source"].get("state"),
+                "zip": hit["_source"].get("zip"),
+                "country": hit["_source"].get("country"),
+                "timestamp": hit["_source"]["timestamp"]
+            } for hit in response_hits]
+        except Exception:
+            traceback.print_exc("Error retrieving image sequence")
+            return []
+        
     def get_by_id(self, doc_id: str) -> Optional[Dict[str, Any]]:
         """Retrieve a specific document by its ID."""
         try:

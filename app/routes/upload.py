@@ -3,6 +3,8 @@ import json
 from random import randint
 import traceback
 from fastapi import APIRouter, Depends, UploadFile, Form, HTTPException
+from openai import BaseModel
+from pydantic import field_validator, validator
 from sqlalchemy.orm import Session
 from datetime import datetime
 import os
@@ -14,7 +16,7 @@ from app.core.db import get_async_session
 from app.model.Memory import Memory as MemoryModel
 from app.modules.elasticsearch import elastic
 from app.modules.geoapify.api import reverse_geocode
-from app.modules.image_metadata_extraction import ImageMetadata, extract_metadata_from_image
+from app.modules.metadata_extraction import ImageMetadata, extract_metadata_from_image
 from app.schema import Memory
 
 router = APIRouter(prefix='/upload')
@@ -24,23 +26,38 @@ UPLOAD_DIR = "data/storage"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 
+# image: str = Form(...),  # base64 image data
+#     location: str = Form(default=''),
+#     timestamp: str = Form(default='')
+
+class UploadMemoryRequest(BaseModel):
+    image: str
+    location: Optional[str] = None
+    timestamp: Optional[str] = None
+    
+
 @router.post("/")
 async def upload_memory(
-    image: str = Form(...),  # base64 image data
-    location: str = Form(default=''),
-    timestamp: str = Form(...)
+    memory: UploadMemoryRequest,
 ):
+    image = memory.image
+    location = memory.location
+    timestamp = memory.timestamp
+
     try:
         if "base64," in image:
             image_data = image.split("base64,")[1]
         else:
-            image_data = image
+            image_data = image 
             
         # Decode base64 image
         image_bytes = base64.b64decode(image_data)
 
         # Generate unique filename using timestamp
-        timestamp_obj = datetime.fromisoformat(timestamp)
+        if not timestamp:
+            timestamp_obj = datetime.now()
+        else:
+            timestamp_obj = datetime.fromisoformat(timestamp)
         filename = f"image_{timestamp_obj.strftime('%Y-%m-%d_%H-%M-%S')}-{randint(0,10000)}.jpg"
         file_path = os.path.join(UPLOAD_DIR, filename)
 

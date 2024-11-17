@@ -20,6 +20,11 @@ RUN poetry install --no-root
 # Copy the rest of the application code to the container
 COPY . /app/
 
+# required for pytesseract and required for opencv
+RUN apt-get update \
+  && apt-get -y install tesseract-ocr \ 
+  && apt-get -y install ffmpeg libsm6 libxext6
+
 # Expose the port that the app runs on
 EXPOSE 8000
 

@@ -13,8 +13,8 @@ return llm_score * 2 + ocr_score;
 class ImageSearchSystem:
     def __init__(
         self,
-        elastic_host: str = "http://localhost:9200",
-        index_name: str = "images",
+        elastic_host: str,
+        index_name: str,
         embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
     ):
         self.es = Elasticsearch(elastic_host)
@@ -400,7 +400,10 @@ class ImageSearchSystem:
 
 if __name__ == "__main__":    
     # Example hybrid search with location filter
-    elastic = ImageSearchSystem()
+    elastic = ImageSearchSystem(
+        elastic_host="http://localhost:9200",
+        index_name="images"
+    )
 
     hybrid_results = elastic.search_images(
         query="shoes",

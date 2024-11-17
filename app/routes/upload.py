@@ -11,11 +11,12 @@ import base64
 from app.modules.elasticsearch import elastic
 from app.modules.geoapify.api import reverse_geocode
 from app.modules.metadata_extraction import extract_metadata_from_image
+from app.core.settings import settings
 
 router = APIRouter(prefix='/upload')
 
 # Configure upload directory
-UPLOAD_DIR = "data/storage"
+UPLOAD_DIR = settings.storage_path
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 class UploadMemoryRequest(BaseModel):

@@ -1,10 +1,9 @@
 import traceback
 import requests
 from requests.structures import CaseInsensitiveDict
+from app.core.settings import settings
 
-API_KEY = '0b9eb63b766b42778d552a95cb471edd'
-
-from typing import TypedDict, List, Literal, Union, NotRequired
+from typing import TypedDict, List, Literal
 
 class TimezoneDict(TypedDict):
     name: str
@@ -58,7 +57,7 @@ class PropertiesDict(TypedDict):
     place_id: str
 
 def reverse_geocode(lat: float, lon: float):
-    url = f"https://api.geoapify.com/v1/geocode/reverse?lat={lat}&lon={lon}&apiKey={API_KEY}"
+    url = f"https://api.geoapify.com/v1/geocode/reverse?lat={lat}&lon={lon}&apiKey={settings.geoapify_api_key}"
 
     headers = CaseInsensitiveDict()
     headers["Accept"] = "application/json"

@@ -1,0 +1,33 @@
+data
+caddy
+elasticsearch
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore virtual environments
+venv/
+.env
+
+# Ignore local configuration files
+*.local
+
+# Ignore logs
+*.log
+
+# Ignore Docker-related files
+Dockerfile
+docker-compose.yml
+
+# Ignore git files
+.git
+.gitignore
+
+# Ignore node_modules (if any)
+node_modules/
+
+# Ignore any other build artifacts
+build/
+dist/

@@ -15,33 +15,16 @@ poetry install
 
 ## Run
 
+Before starting the backend, you'll need to run elasticsearch database and the caddy reverse proxy to server the
+recorded images and frontend. Make sure you start the frontend with the proper command to make it accessible to
+the dockerized caddy server. See the frontend readme. Then, run following command:
+
+```bash
+docker compose up
+```
+
+Once this is running, run the following command in another terminal window:
+
 ```bash
 poetry run uvicorn app:app --reload
-```
-
-## Database
-
-### Setting up the database
-
-You can quickly set up a PostgreSQL database using Docker. Run the following command to start a
-PostgreSQL container:
-
-```bash
-docker compose up postgres -d
-```
-
-### Managing the database with Alembic
-
-Whenever you make changes to the database schema, you need to create a new migration file. When
-you change the app/model files, you've most likely changed the database schema. To create a new
-migration file, run the following command:
-
-```bash
-poetry run alembic revision --autogenerate -m "<message>"
-```
-
-Once a revision has been created, you can apply the changes to the database by running:
-
-```bash
-poetry run alembic upgrade head
 ```

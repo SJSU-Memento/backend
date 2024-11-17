@@ -5,7 +5,7 @@ from datetime import datetime
 import uuid
 from sentence_transformers import SentenceTransformer
 
-script_source = """double llm_score = cosineSimilarity(params.query_vector, 'llm_description_vector') + 1.0;
+script_source = """double llm_score = !doc['llm_description_vector'].isEmpty() ? cosineSimilarity(params.query_vector, 'llm_description_vector') + 1.0 : 0;
 double ocr_score = !doc['ocr_text_vector'].isEmpty() ? cosineSimilarity(params.query_vector, 'ocr_text_vector') + 1.0 : 0;
 return llm_score * 2 + ocr_score;
 """

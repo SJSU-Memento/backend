@@ -1,5 +1,5 @@
 import traceback
-from elasticsearch import Elasticsearch
+from elasticsearch import ApiError, Elasticsearch
 from typing import Dict, List, Literal, Optional, Any, Union
 from datetime import datetime
 import uuid
@@ -266,15 +266,18 @@ class ImageSearchSystem:
                     filter_conditions.append({"term": {key: value}})
 
         if temporal_filters:
+            timestamp_range = {}
+
+            if temporal_filters.get('start'):
+                timestamp_range["gte"] = temporal_filters['start']
+            if temporal_filters.get('end'):
+                timestamp_range["lte"] = temporal_filters['end']
+
             filter_conditions.append({
                 "range": {
-                    "timestamp": {
-                        "gte": temporal_filters['start'],
-                        "lte": temporal_filters['end']
-                    }
+                    "timestamp": timestamp_range
                 }
             })
-            print(filter_conditions)
 
         # Combine all query components
         search_body = {
@@ -289,7 +292,7 @@ class ImageSearchSystem:
             },
             "size": size
         }
-        # print('search_body', json.dumps(search_body, indent=4))
+        
         try:
             response = self.es.search(
                 index=self.index_name,
@@ -315,9 +318,9 @@ class ImageSearchSystem:
                 # "tags": hit["_source"].get("tags", []),
             } for hit in response_hits]
             
-        except Exception as e:
-            print(f"Error executing search: {e}")
-            raise
+        except ApiError as e:
+            print(f"Elasticsearch error: {e.info}")
+            raise e
 
     def get_image_sequence(self, timestamp: datetime, direction: Literal["before", "after"], limit: int = 10, inclusive: bool = False) -> List[Dict[str, Any]]:
         try:

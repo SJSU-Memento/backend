@@ -19,12 +19,11 @@ async def read_memories(query: MemoryQuery = Depends()):
             "radius": query.radius
         }
 
-    temporal_filters = None
-    if query.start and query.end:
-        temporal_filters = {
-            "start": query.start,
-            "end": query.end
-        }
+    temporal_filters = {}
+    if query.start:
+        temporal_filters["start"] = query.start
+    if query.end:
+        temporal_filters["end"] = query.end
 
     hybrid_results = elastic.search_images(
         query=query.query,

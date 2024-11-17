@@ -1,34 +1,22 @@
 from decimal import Decimal
-import json
 from random import randint
 import traceback
-from fastapi import APIRouter, Depends, UploadFile, Form, HTTPException
+from fastapi import APIRouter, HTTPException
 from openai import BaseModel
-from pydantic import field_validator, validator
-from sqlalchemy.orm import Session
 from datetime import datetime
 import os
 from typing import Optional
 import base64
 
-from app.core.db import get_async_session
-
-from app.model.Memory import Memory as MemoryModel
 from app.modules.elasticsearch import elastic
 from app.modules.geoapify.api import reverse_geocode
-from app.modules.metadata_extraction import ImageMetadata, extract_metadata_from_image
-from app.schema import Memory
+from app.modules.metadata_extraction import extract_metadata_from_image
 
 router = APIRouter(prefix='/upload')
 
 # Configure upload directory
 UPLOAD_DIR = "data/storage"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
-
-
-# image: str = Form(...),  # base64 image data
-#     location: str = Form(default=''),
-#     timestamp: str = Form(default='')
 
 class UploadMemoryRequest(BaseModel):
     image: str
